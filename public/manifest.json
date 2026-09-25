@@ -1,0 +1,10 @@
+{
+  "name": "Nid — déménagement",
+  "short_name": "Nid",
+  "description": "Organiser le déménagement, à plusieurs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1E2A32",
+  "theme_color": "#1E2A32",
+  "icons": []
+}
