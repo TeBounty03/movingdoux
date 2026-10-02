@@ -1,0 +1,69 @@
+/* Écran Aide : documents de docs/ rendus en HTML */
+
+.aide-onglets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.aide-onglets a {
+  box-sizing: border-box; text-decoration: none; padding: 8px 16px; border-radius: 20px;
+  font-size: 13.5px; background: var(--surface); color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.aide-onglets a.active { background: var(--gold); color: var(--ink); font-weight: 600; }
+
+.aide-sommaire ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 32px; font-size: 14px; }
+.aide-sommaire li { padding: 3px 0; break-inside: avoid; }
+.aide-sommaire a { color: var(--text-dark); }
+
+/* Document */
+.doc { font-size: 14.5px; line-height: 1.6; overflow-wrap: anywhere; }
+.doc > :first-child { margin-top: 0; }
+.doc h2 {
+  font-size: 20px; margin: 34px 0 10px; padding-top: 18px; border-top: 1px solid var(--paper-line);
+  scroll-margin-top: 16px;
+}
+.doc h2:first-child { border-top: none; padding-top: 0; }
+.doc h3 { font-size: 16px; margin: 22px 0 6px; scroll-margin-top: 16px; }
+.doc p, .doc ul, .doc ol { margin: 8px 0; }
+.doc ul, .doc ol { padding-left: 22px; }
+.doc li { margin: 3px 0; }
+.doc strong { font-weight: 600; }
+.doc a { color: #8A6A2A; }
+.doc code {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.88em;
+  background: #EDE6D3; padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere;
+}
+.doc pre {
+  background: var(--ink); color: var(--text-light); border-radius: 8px; padding: 14px 16px;
+  overflow-x: auto; font-size: 12.5px; line-height: 1.5; margin: 12px 0;
+}
+.doc pre code { background: none; padding: 0; font-size: inherit; color: inherit; overflow-wrap: normal; white-space: pre; }
+.doc blockquote {
+  margin: 12px 0; padding: 10px 14px; background: #EFE2C8; border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0; color: #5C4415;
+}
+.doc blockquote p { margin: 0; }
+.doc table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+.doc th, .doc td { text-align: left; vertical-align: top; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--paper-line); }
+.doc th { font-size: 12px; color: var(--text-dark-muted); font-weight: 600; }
+.doc td:first-child { font-weight: 500; }
+/* Les noms de fichiers et commandes ne se coupent pas au milieu */
+.doc td code, .doc th code { overflow-wrap: normal; white-space: nowrap; }
+.doc td:first-child { width: 1%; white-space: nowrap; }
+
+/* Page Aide hors connexion : même mise en page, sans la navigation */
+.aide-autonome { max-width: 860px; margin: 0 auto; padding: 28px 16px 48px; }
+.aide-retour { display: inline-block; margin-bottom: 18px; color: var(--text-muted); font-size: 14px; }
+
+@media (max-width: 720px) {
+  .aide-onglets a { flex: 1 1 0; text-align: center; padding: 10px 8px; font-size: 13px; }
+  .aide-sommaire ol { columns: 1; }
+  .doc { font-size: 15px; }
+  .doc h2 { font-size: 18px; }
+  .doc pre { font-size: 12px; padding: 12px; }
+
+  /* Tableaux en fiches : chaque ligne devient un bloc, la 1re colonne sert de titre */
+  .doc table, .doc tbody, .doc tr, .doc td { display: block; width: auto; }
+  .doc thead { display: none; }
+  .doc tr { padding: 10px 0; border-bottom: 1px solid var(--paper-line); }
+  .doc td { border: none; padding: 2px 0; font-size: 14px; }
+  .doc td:first-child { width: auto; white-space: normal; font-weight: 600; }
+  .doc td code { white-space: normal; overflow-wrap: anywhere; }
+}

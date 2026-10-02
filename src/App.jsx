@@ -1,31 +1,43 @@
-import { useEffect, useState } from 'react'
-import { useAuth } from './lib/useAuth'
-import { useFoyer } from './lib/useFoyer'
+import { Suspense, useEffect } from 'react'
+import { Link, Navigate, Route, Routes, useLocation } from 'react-router'
 import Login from './components/Login'
 import Onboarding from './components/Onboarding'
 import Sidebar from './components/Sidebar'
-import Dashboard from './screens/Dashboard'
-import Taches from './screens/Taches'
-import Cartons from './screens/Cartons'
-import Budget from './screens/Budget'
-import Demarches from './screens/Demarches'
-import Meubles from './screens/Meubles'
-import Parametres from './screens/Parametres'
+import { ECRAN_AIDE, ECRANS } from './ecrans'
+import { useAuth } from './lib/useAuth'
+import { useFoyer } from './lib/useFoyer'
+import './styles/layout.css'
+
+// Remonte en haut de page à chaque changement d'écran
+function RemonterEnHaut() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
+
+const chargement = <div className="loading-screen">Chargement...</div>
+
+// L'aide est consultable avant d'être connecté (lien depuis la page de connexion)
+function AideHorsConnexion() {
+  const Aide = ECRAN_AIDE.Composant
+  return (
+    <div className="aide-autonome">
+      <RemonterEnHaut />
+      <Link to="/" className="aide-retour">← Retour à l'appli</Link>
+      <Suspense fallback={chargement}>
+        <Aide />
+      </Suspense>
+    </div>
+  )
+}
 
 export default function App() {
+  const { pathname } = useLocation()
+  const surAide = pathname === ECRAN_AIDE.chemin || pathname.startsWith(`${ECRAN_AIDE.chemin}/`)
   const { user, loading: authLoading, signOut } = useAuth()
-  const {
-    loading: foyerLoading,
-    foyer,
-    membre,
-    membres,
-    createFoyer,
-    joinFoyer,
-    addMembreLabel,
-    removeMembre,
-    setAccentColor,
-  } = useFoyer(user)
-  const [screen, setScreen] = useState('dashboard')
+  const { loading: foyerLoading, foyer, membre, membres, createFoyer, joinFoyer, ...actionsFoyer } = useFoyer(user)
 
   // applique la couleur d'accent choisie dans Paramètres à toute l'appli
   useEffect(() => {
@@ -34,33 +46,27 @@ export default function App() {
     }
   }, [foyer?.couleur_accent])
 
-  if (authLoading) return <div className="loading-screen">Chargement...</div>
-  if (!user) return <Login />
-  if (foyerLoading) return <div className="loading-screen">Chargement...</div>
-  if (!membre) return <Onboarding createFoyer={createFoyer} joinFoyer={joinFoyer} />
+  if (authLoading) return chargement
+  if (!user) return surAide ? <AideHorsConnexion /> : <Login />
+  if (foyerLoading) return chargement
+  if (!membre) return surAide ? <AideHorsConnexion /> : <Onboarding createFoyer={createFoyer} joinFoyer={joinFoyer} />
 
-  const screens = {
-    dashboard: <Dashboard foyer={foyer} membres={membres} />,
-    taches: <Taches foyer={foyer} membres={membres} />,
-    cartons: <Cartons foyer={foyer} />,
-    budget: <Budget foyer={foyer} membres={membres} />,
-    demarches: <Demarches foyer={foyer} />,
-    meubles: <Meubles foyer={foyer} membres={membres} />,
-    parametres: (
-      <Parametres
-        foyer={foyer}
-        membres={membres}
-        addMembreLabel={addMembreLabel}
-        removeMembre={removeMembre}
-        setAccentColor={setAccentColor}
-      />
-    ),
-  }
+  const props = { foyer, membres, onSignOut: signOut, ...actionsFoyer }
 
   return (
     <div className="app">
-      <Sidebar current={screen} onChange={setScreen} onSignOut={signOut} foyerNom={foyer.nom} />
-      <div className="main">{screens[screen]}</div>
+      <RemonterEnHaut />
+      <Sidebar onSignOut={signOut} foyerNom={foyer.nom} />
+      <main className="main">
+        <Suspense fallback={chargement}>
+          <Routes>
+            {ECRANS.map(({ id, chemin, Composant, sousPages }) => (
+              <Route key={id} path={sousPages ? `${chemin}/*` : chemin} element={<Composant {...props} />} />
+            ))}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </main>
     </div>
   )
 }

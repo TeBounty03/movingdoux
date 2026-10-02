@@ -1,0 +1,40 @@
+.vol-summary { background: var(--surface); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.06); }
+.vol-summary .label { color: var(--text-muted); font-size: 12px; margin-bottom: 6px; }
+.vol-summary .value { font-family: 'Fraunces', serif; font-size: 24px; color: var(--gold); }
+.vol-summary .note { font-size: 12.5px; color: var(--text-muted); margin-top: 6px; }
+
+.filter-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.filter-tabs button {
+  all: unset; box-sizing: border-box; cursor: pointer; padding: 6px 14px; border-radius: 20px;
+  font-size: 13px; background: var(--surface); color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.filter-tabs button.active { background: var(--gold); color: var(--ink); font-weight: 600; }
+
+.furn-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--paper-line); font-size: 13.5px; }
+.furn-row:last-child { border-bottom: none; }
+.furn-row .name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.furn-row .dims { color: var(--text-dark-muted); width: 120px; font-variant-numeric: tabular-nums; }
+.furn-row .vol { width: 70px; text-align: right; font-variant-numeric: tabular-nums; }
+.furn-row .statut-select { font-size: 12px; border: none; background: transparent; color: var(--text-dark-muted); }
+
+.dims-row { display: flex; gap: 8px; align-items: center; }
+.dims-row input { width: 64px; text-align: center; }
+.dims-row .x { color: var(--text-dark-muted); font-size: 13px; }
+
+.live-volume {
+  grid-column: 1 / -1; background: #fff; border: 1px solid var(--field-border); border-radius: 6px;
+  padding: 10px 14px; font-size: 13px; color: var(--text-dark-muted); display: flex; justify-content: space-between; align-items: center;
+}
+.live-volume b { font-family: 'Fraunces', serif; font-size: 17px; color: #8A6A2A; font-weight: 500; }
+
+@media (max-width: 720px) {
+  /* Liste : nom sur une ligne, détails sur la suivante */
+  .furn-row { flex-wrap: wrap; gap: 6px 10px; }
+  .furn-row .name { flex: 1 1 calc(100% - 40px); }
+  .furn-row .dims { width: auto; margin-left: 32px; }
+  .furn-row .vol { width: auto; }
+  .furn-row .statut-select { margin-left: auto; font-size: 16px; }
+
+  .dims-row input { flex: 1; width: auto; min-width: 0; }
+}

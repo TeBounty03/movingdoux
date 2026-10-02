@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 
 export default function Onboarding({ createFoyer, joinFoyer }) {
   const [mode, setMode] = useState('create') // create | join
@@ -61,6 +62,7 @@ export default function Onboarding({ createFoyer, joinFoyer }) {
         </button>
 
         {error && <div className="login-error">{error}</div>}
+        <Link to="/aide" className="login-aide">Comment ça marche ?</Link>
       </form>
     </div>
   )

@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      # Les émulateurs Firebase ont besoin de Java
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Lint
+        run: npm run lint
+      - name: Tests unitaires et composants
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Règles de sécurité Firestore
+        run: npm run test:rules
+      - name: Parcours complets (mobile et ordinateur)
+        run: npm run test:e2e
+
+      - name: Rapport Playwright (captures, traces)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7

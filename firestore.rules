@@ -1,0 +1,73 @@
+rules_version = '2';
+
+// Chaque foyer ne voit et ne modifie que ses propres données.
+// Modèle : voir src/lib/useFoyer.js
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function foyerPath(foyerId) {
+      return /databases/$(database)/documents/foyers/$(foyerId);
+    }
+    function isMember(foyerId) {
+      return signedIn() && request.auth.uid in get(foyerPath(foyerId)).data.membresUids;
+    }
+    // Pour les écritures groupées (création / arrivée dans un foyer) : état après le batch
+    function isMemberAfter(foyerId) {
+      return signedIn() && request.auth.uid in getAfter(foyerPath(foyerId)).data.membresUids;
+    }
+
+    // Foyer de la personne connectée
+    match /users/{uid} {
+      allow read, delete: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.foyer_id is string
+        && isMemberAfter(request.resource.data.foyer_id);
+    }
+
+    // Code d'invitation → foyer. Lisible un par un (pas de liste), jamais modifié.
+    match /codes/{code} {
+      allow get: if signedIn();
+      allow create: if isMemberAfter(request.resource.data.foyer_id)
+        && getAfter(foyerPath(request.resource.data.foyer_id)).data.code == code;
+    }
+
+    match /foyers/{foyerId} {
+      allow read: if isMember(foyerId);
+
+      // La personne qui crée le foyer en est le seul membre au départ
+      allow create: if signedIn()
+        && request.resource.data.membresUids == [request.auth.uid]
+        && request.resource.data.code is string;
+
+      // Un membre peut changer le nom ou la couleur, pas le code ni la liste des membres
+      allow update: if isMember(foyerId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['code', 'membresUids']);
+
+      // Rejoindre : on ne peut ajouter que soi-même, et seulement avec le bon code
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['membresUids'])
+        && request.resource.data.membresUids.toSet()
+          == resource.data.membresUids.toSet().union([request.auth.uid].toSet())
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.foyer_id == foyerId
+        && get(/databases/$(database)/documents/codes/$(getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.join_code)).data.foyer_id == foyerId;
+
+      match /membres/{membreId} {
+        allow read: if isMember(foyerId);
+        // Un compte ne peut créer que sa propre fiche ; les "labels" n'ont pas de compte
+        allow create, update: if isMemberAfter(foyerId)
+          && (request.resource.data.user_id == null
+            || (request.resource.data.user_id == request.auth.uid && membreId == request.auth.uid));
+        // Seules les personnes sans compte peuvent être retirées
+        allow delete: if isMember(foyerId) && resource.data.user_id == null;
+      }
+
+      match /{collection}/{docId} {
+        allow read, write: if collection in ['taches', 'cartons', 'depenses', 'demarches', 'meubles']
+          && isMember(foyerId);
+      }
+    }
+  }
+}

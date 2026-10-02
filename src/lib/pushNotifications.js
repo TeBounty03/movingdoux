@@ -7,10 +7,10 @@
 //    "Web Push Setup" — quelques lignes de <script> à coller dans le <head>)
 // 4. Appelle initPushNotifications() une fois dans App.jsx, après la
 //    connexion (par exemple dans un useEffect qui dépend de `user`)
-// 5. Crée une Supabase Edge Function planifiée (cron quotidien) qui
-//    interroge les tables taches/demarches pour les échéances proches et
-//    appelle l'API OneSignal — voir schema.sql pour le modèle de données,
-//    et le document d'architecture pour le détail du flux.
+// 5. Crée une tâche planifiée (cron quotidien, par exemple une GitHub Action
+//    avec firebase-admin comme dans activitiesdoux) qui interroge les
+//    collections taches/demarches pour les échéances proches et appelle
+//    l'API OneSignal — voir src/lib/useFoyer.js pour le modèle de données.
 
 export function isPushConfigured() {
   return Boolean(import.meta.env.VITE_ONESIGNAL_APP_ID)

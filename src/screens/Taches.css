@@ -1,0 +1,8 @@
+.subtask { margin-left: 28px; font-size: 13px; color: var(--text-dark-muted); display: flex; gap: 10px; align-items: center; padding: 4px 0; }
+.subtask .check { width: 13px; height: 13px; }
+.subtask.done span { text-decoration: line-through; }
+
+@media (max-width: 720px) {
+  .subtask { margin-left: 32px; padding: 6px 0; }
+  .subtask .check { width: 18px; height: 18px; }
+}
