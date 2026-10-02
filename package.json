@@ -14,7 +14,7 @@
     "test:rules": "firebase emulators:exec --only firestore --project demo-movingdoux \"vitest run --config vitest.rules.config.js\"",
     "test:e2e": "firebase emulators:exec --only auth,firestore --project demo-movingdoux \"playwright test\"",
     "test:all": "npm run lint && npm test && npm run test:rules && npm run test:e2e",
-    "deploy": "npm run test:all && vite build && firebase deploy --only hosting,firestore:rules"
+    "deploy": "npm run test:all && firebase deploy --only hosting,firestore:rules"
   },
   "dependencies": {
     "firebase": "^12.19.0",

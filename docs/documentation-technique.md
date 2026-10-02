@@ -161,7 +161,7 @@ Les parcours démarrent leur propre serveur (port 5174, branché sur les émulat
 | `npm run dev` | Appli en local, **sur la vraie base**. |
 | `npm run dev:emulateurs` | Appli sur des données de test ; le lien de connexion s'affiche dans le terminal. |
 | `npm run test:all` | Tous les tests. |
-| `npm run deploy` | Tests, build, puis mise en ligne (appli + règles). |
+| `npm run deploy` | Tests, puis mise en ligne (appli + règles). Le build est lancé automatiquement avant chaque `firebase deploy` (`predeploy` dans `firebase.json`). |
 
 La CI (`.github/workflows/tests.yml`) lance tous les tests à chaque push ; en cas d'échec, les captures et traces Playwright sont jointes au run.
 
