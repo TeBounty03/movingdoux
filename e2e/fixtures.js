@@ -7,7 +7,11 @@ export const test = base.extend({
     const erreurs = []
     page.on('pageerror', (e) => erreurs.push(`erreur : ${e.message}`))
     page.on('console', (m) => {
-      if (m.type() === 'error') erreurs.push(`console.error : ${m.text()}`)
+      if (m.type() !== 'error') return
+      // Le canal temps réel de Firestore est parfois refusé quand sa session expire ;
+      // le SDK le rouvre aussitôt tout seul. Ce n'est pas une erreur de l'appli.
+      if (m.location().url.includes('/google.firestore.v1.Firestore/Listen/channel')) return
+      erreurs.push(`console.error : ${m.text()}`)
     })
     page.erreursConsole = erreurs
     await fournir(page)
