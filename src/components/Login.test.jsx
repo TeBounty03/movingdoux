@@ -17,6 +17,7 @@ describe('Connexion', () => {
     afficher(<Login />)
     await user.type(screen.getByPlaceholderText('ton@email.fr'), 'alice@exemple.fr')
     await user.click(screen.getByRole('button', { name: 'Recevoir le lien de connexion' }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Moving Doux' })).toBeInTheDocument()
     expect(signInWithEmail).toHaveBeenCalledWith('alice@exemple.fr')
     expect(await screen.findByText(/Regarde ta boîte mail/)).toBeInTheDocument()
   })

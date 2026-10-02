@@ -28,7 +28,7 @@ export default function Sidebar({ onSignOut, foyerNom }) {
 
   return (
     <div className="sidebar">
-      <div className="brand">Nid</div>
+      <div className="brand">Moving Doux</div>
       <div className="brand-sub">{foyerNom || 'Déménagement'}</div>
       <nav className="main-nav">
         {PRINCIPAUX.map((e) => <Lien key={e.id} ecran={e} onClick={fermer} />)}

@@ -8,7 +8,7 @@ import './Aide.css'
 
 // Les deux documents vivent dans docs/ (lisibles aussi sur GitHub) : l'écran les affiche tels quels.
 const DOCS = [
-  { chemin: '/aide', titre: "Guide d'utilisation", resume: 'Comment utiliser Nid, écran par écran', source: guide },
+  { chemin: '/aide', titre: "Guide d'utilisation", resume: 'Comment utiliser Moving Doux, écran par écran', source: guide },
   { chemin: '/aide/technique', titre: 'Documentation technique', resume: "Comment l'appli est construite, pour la modifier", source: docTechnique },
 ]
 

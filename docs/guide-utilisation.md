@@ -1,6 +1,6 @@
 # Guide d'utilisation
 
-Nid sert à organiser un déménagement à plusieurs : tâches, cartons, budget, démarches administratives et meubles, au même endroit et à jour pour tout le monde en même temps.
+Moving Doux sert à organiser un déménagement à plusieurs : tâches, cartons, budget, démarches administratives et meubles, au même endroit et à jour pour tout le monde en même temps.
 
 ## Premiers pas
 

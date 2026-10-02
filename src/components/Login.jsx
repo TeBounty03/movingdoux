@@ -18,7 +18,7 @@ export default function Login() {
   return (
     <div className="login-screen">
       <form className="login-box" onSubmit={handleSubmit}>
-        <h1>Nid</h1>
+        <h1>Moving Doux</h1>
         <p>Organiser le déménagement, à plusieurs.</p>
         <input
           type="email"

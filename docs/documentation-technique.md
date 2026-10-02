@@ -96,7 +96,7 @@ Une collection qui n'est pas dans la liste de `firestore.rules` est refusée. Un
 
 ### Connexion par lien magique (`lib/useAuth.js`)
 
-1. `sendSignInLinkToEmail` envoie le lien ; l'e-mail est gardé dans `localStorage` (`nid-email-connexion`).
+1. `sendSignInLinkToEmail` envoie le lien ; l'e-mail est gardé dans `localStorage` (`movingdoux-email-connexion`).
 2. Au retour sur le site, `isSignInWithEmailLink` détecte le lien et `signInWithEmailLink` termine la connexion (l'e-mail est redemandé s'il n'est pas dans ce navigateur).
 3. L'adresse est nettoyée (`history.replaceState`). Le hook étant monté deux fois (App et Login), le lien n'est traité qu'une fois (`linkHandled`).
 

@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth'
 import { auth } from '../firebase'
 
-const EMAIL_KEY = 'nid-email-connexion'
+const EMAIL_KEY = 'movingdoux-email-connexion'
 
 // Le hook est monté à plusieurs endroits (App, Login) : on ne traite le lien qu'une fois
 let linkHandled = false

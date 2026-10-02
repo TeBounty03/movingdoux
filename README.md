@@ -1,4 +1,4 @@
-# Nid — organiser le déménagement, à plusieurs
+# Moving Doux — organiser le déménagement, à plusieurs
 
 Webapp React + Firebase (Firestore, Authentication, Hosting). Projet Firebase : `moving-doux`. Documentation complète dans [`docs/`](docs/).
 
