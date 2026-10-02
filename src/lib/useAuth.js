@@ -1,34 +1,59 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../supabaseClient'
+import {
+  isSignInWithEmailLink,
+  onAuthStateChanged,
+  sendSignInLinkToEmail,
+  signInWithEmailLink,
+  signOut as firebaseSignOut,
+} from 'firebase/auth'
+import { auth } from '../firebase'
+
+const EMAIL_KEY = 'nid-email-connexion'
+
+// Le hook est monté à plusieurs endroits (App, Login) : on ne traite le lien qu'une fois
+let linkHandled = false
 
 export function useAuth() {
-  const [session, setSession] = useState(null)
+  const [user, setUser] = useState(auth.currentUser)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
+    // Retour depuis le lien magique reçu par e-mail
+    if (!linkHandled && isSignInWithEmailLink(auth, window.location.href)) {
+      linkHandled = true
+      const email =
+        window.localStorage.getItem(EMAIL_KEY) ||
+        window.prompt('Confirme ton e-mail pour terminer la connexion')
+      if (email) {
+        signInWithEmailLink(auth, email, window.location.href)
+          .then(() => window.localStorage.removeItem(EMAIL_KEY))
+          .catch(() => {})
+          .finally(() => window.history.replaceState(null, '', window.location.pathname))
+      }
+    }
+
+    return onAuthStateChanged(auth, (newUser) => {
+      setUser(newUser)
       setLoading(false)
     })
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession)
-    })
-
-    return () => listener.subscription.unsubscribe()
   }, [])
 
   async function signInWithEmail(email) {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: window.location.origin },
-    })
-    return { error }
+    try {
+      await sendSignInLinkToEmail(auth, email, {
+        url: window.location.origin,
+        handleCodeInApp: true,
+      })
+      window.localStorage.setItem(EMAIL_KEY, email)
+      return { error: null }
+    } catch (error) {
+      return { error }
+    }
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
+    await firebaseSignOut(auth)
   }
 
-  return { session, user: session?.user ?? null, loading, signInWithEmail, signOut }
+  return { user, loading, signInWithEmail, signOut }
 }

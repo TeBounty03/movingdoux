@@ -1,104 +1,58 @@
-import { useMemo, useState } from 'react'
-import { supabase } from '../supabaseClient'
-import { useSupabaseTable } from '../lib/useSupabaseTable'
+import EnTete from '../components/EnTete'
+import { BoutonOuvrir, Champ, PanneauFormulaire } from '../components/Formulaire'
+import { formatEuros } from '../lib/format'
+import { FORMULAIRE_VIDE, SEUIL_A_JOUR, ajouterDepense, soldes, totaux, useDepenses } from '../models/depenses'
+import { useFormulaire } from '../lib/useFormulaire'
+import './Budget.css'
+
+function Solde({ solde }) {
+  if (solde > SEUIL_A_JOUR) return <span className="creance">on lui doit {formatEuros(solde)}</span>
+  if (solde < -SEUIL_A_JOUR) return <span>doit {formatEuros(Math.abs(solde))}</span>
+  return <span>à jour</span>
+}
 
 export default function Budget({ foyer, membres }) {
-  const { rows: depenses } = useSupabaseTable('depenses', foyer.id)
-  const [formOpen, setFormOpen] = useState(false)
-  const [form, setForm] = useState({ categorie: '', paye_par_id: '', montant_prevu: '', montant_reel: '' })
-
-  const totalReel = depenses.reduce((s, d) => s + Number(d.montant_reel || 0), 0)
-  const totalPrevu = depenses.reduce((s, d) => s + Number(d.montant_prevu || 0), 0)
-
-  const soldes = useMemo(() => {
-    if (membres.length === 0) return []
-    const parPersonne = Object.fromEntries(membres.map((m) => [m.id, 0]))
-    depenses.forEach((d) => {
-      if (d.paye_par_id && parPersonne[d.paye_par_id] !== undefined) {
-        parPersonne[d.paye_par_id] += Number(d.montant_reel || 0)
-      }
-    })
-    const moyenne = totalReel / membres.length
-    return membres.map((m) => ({
-      membre: m,
-      paye: parPersonne[m.id] || 0,
-      solde: (parPersonne[m.id] || 0) - moyenne,
-    }))
-  }, [depenses, membres, totalReel])
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!form.categorie.trim()) return
-    await supabase.from('depenses').insert({
-      foyer_id: foyer.id,
-      categorie: form.categorie.trim(),
-      paye_par_id: form.paye_par_id || null,
-      montant_prevu: form.montant_prevu ? Number(form.montant_prevu) : null,
-      montant_reel: form.montant_reel ? Number(form.montant_reel) : null,
-    })
-    setForm({ categorie: '', paye_par_id: '', montant_prevu: '', montant_reel: '' })
-    setFormOpen(false)
-  }
+  const { rows: depenses } = useDepenses(foyer.id)
+  const form = useFormulaire(FORMULAIRE_VIDE)
+  const total = totaux(depenses)
+  const parPersonne = soldes(depenses, membres)
 
   return (
     <div>
-      <div className="top">
-        <h1>Budget</h1>
-        <p>Dépenses et répartition entre tout le monde</p>
-      </div>
+      <EnTete titre="Budget">Dépenses et répartition entre tout le monde</EnTete>
 
       <div className="balance-card">
-        {soldes.map(({ membre, paye, solde }) => (
+        {parPersonne.map(({ membre, paye, solde }) => (
           <div key={membre.id} className="who-line">
-            {membre.prenom} a payé {paye.toFixed(0)} €
-            {' — '}
-            {solde > 1 ? (
-              <span style={{ color: 'var(--gold)' }}>on lui doit {solde.toFixed(0)} €</span>
-            ) : solde < -1 ? (
-              <span>doit {Math.abs(solde).toFixed(0)} €</span>
-            ) : (
-              <span>à jour</span>
-            )}
+            {membre.prenom} a payé {formatEuros(paye)} — <Solde solde={solde} />
           </div>
         ))}
-        <div className="amount" style={{ marginTop: 10 }}>{totalReel.toFixed(0)} € / {totalPrevu.toFixed(0)} € prévus</div>
+        <div className="amount">{formatEuros(total.reel)} / {formatEuros(total.prevu)} prévus</div>
       </div>
 
       <div className="card">
         <div className="card-head">
           <h3>Dépenses</h3>
-          <button className="btn-add" onClick={() => setFormOpen((v) => !v)}>
-            {formOpen ? 'Fermer' : '+ Ajouter une dépense'}
-          </button>
+          <BoutonOuvrir formulaire={form}>+ Ajouter une dépense</BoutonOuvrir>
         </div>
 
-        <div className={`form-panel ${formOpen ? 'open' : ''}`}>
-          <form className="form-grid" onSubmit={handleSubmit}>
-            <div className="field full">
-              <label>Poste de dépense</label>
-              <input type="text" placeholder="Ex : Location camion" value={form.categorie} onChange={(e) => setForm({ ...form, categorie: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>Payé par</label>
-              <select value={form.paye_par_id} onChange={(e) => setForm({ ...form, paye_par_id: e.target.value })}>
-                <option value="">—</option>
-                {membres.map((m) => <option key={m.id} value={m.id}>{m.prenom}</option>)}
-              </select>
-            </div>
-            <div className="field">
-              <label>Montant prévu (€)</label>
-              <input type="number" step="0.01" value={form.montant_prevu} onChange={(e) => setForm({ ...form, montant_prevu: e.target.value })} />
-            </div>
-            <div className="field">
-              <label>Montant réel (€)</label>
-              <input type="number" step="0.01" value={form.montant_reel} onChange={(e) => setForm({ ...form, montant_reel: e.target.value })} />
-            </div>
-            <div className="form-actions">
-              <button type="button" className="btn-cancel" onClick={() => setFormOpen(false)}>Annuler</button>
-              <button type="submit" className="btn-submit">Ajouter</button>
-            </div>
-          </form>
-        </div>
+        <PanneauFormulaire formulaire={form} onValider={(v) => ajouterDepense(foyer.id, v)}>
+          <Champ label="Poste de dépense" full>
+            <input type="text" placeholder="Ex : Location camion" {...form.champ('categorie')} />
+          </Champ>
+          <Champ label="Payé par">
+            <select {...form.champ('paye_par_id')}>
+              <option value="">—</option>
+              {membres.map((m) => <option key={m.id} value={m.id}>{m.prenom}</option>)}
+            </select>
+          </Champ>
+          <Champ label="Montant prévu (€)">
+            <input type="number" step="0.01" inputMode="decimal" {...form.champ('montant_prevu')} />
+          </Champ>
+          <Champ label="Montant réel (€)">
+            <input type="number" step="0.01" inputMode="decimal" {...form.champ('montant_reel')} />
+          </Champ>
+        </PanneauFormulaire>
 
         <table className="data-table">
           <thead>
@@ -109,13 +63,13 @@ export default function Budget({ foyer, membres }) {
               <tr key={d.id}>
                 <td>{d.categorie}</td>
                 <td>{membres.find((m) => m.id === d.paye_par_id)?.prenom || '—'}</td>
-                <td className="num">{d.montant_prevu ? `${Number(d.montant_prevu).toFixed(0)} €` : '—'}</td>
-                <td className="num">{d.montant_reel ? `${Number(d.montant_reel).toFixed(0)} €` : '—'}</td>
+                <td className="num">{d.montant_prevu ? formatEuros(d.montant_prevu) : '—'}</td>
+                <td className="num">{d.montant_reel ? formatEuros(d.montant_reel) : '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {depenses.length === 0 && <p style={{ color: 'var(--text-dark-muted)', fontSize: 14, marginTop: 10 }}>Aucune dépense pour l'instant.</p>}
+        {depenses.length === 0 && <p className="empty">Aucune dépense pour l'instant.</p>}
       </div>
     </div>
   )

@@ -25,3 +25,11 @@ dist-ssr
 
 # Environnement local
 .env
+
+# Firebase
+.firebase
+
+# Tests
+test-results
+playwright-report
+*-debug.log

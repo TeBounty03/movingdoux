@@ -1,0 +1,7 @@
+.code-foyer { background: #fff; border: 1px solid var(--paper-line); border-radius: 6px; padding: 10px 14px; font-family: monospace; font-size: 15px; letter-spacing: 1px; }
+.member-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--paper-line); font-size: 14px; }
+.member-row:last-child { border-bottom: none; }
+.member-row .name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.note-parametres { color: var(--text-dark-muted); font-size: 13.5px; }
+.note-parametres.petite { font-size: 12.5px; margin-top: 10px; }
+.btn-signout { border: 1px solid var(--field-border); border-radius: 6px; color: var(--terracotta); }

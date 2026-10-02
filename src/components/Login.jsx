@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { useAuth } from '../lib/useAuth'
 
 export default function Login() {
@@ -35,6 +36,7 @@ export default function Login() {
         {status === 'error' && (
           <div className="login-error">Un souci est survenu, réessaie dans un instant.</div>
         )}
+        <Link to="/aide" className="login-aide">Comment ça marche ?</Link>
       </form>
     </div>
   )

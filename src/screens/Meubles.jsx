@@ -1,74 +1,48 @@
-import { useMemo, useState } from 'react'
-import { supabase } from '../supabaseClient'
-import { useSupabaseTable } from '../lib/useSupabaseTable'
+import { useState } from 'react'
+import EnTete from '../components/EnTete'
+import { BoutonOuvrir, Champ, PanneauFormulaire } from '../components/Formulaire'
 import WhoChip from '../components/WhoChip'
-
-const STATUTS = [
-  { id: 'on_garde', label: 'On garde' },
-  { id: 'a_vendre', label: 'À vendre / donner' },
-  { id: 'a_acheter', label: 'À acheter neuf' },
-]
+import {
+  FORMULAIRE_VIDE,
+  STATUTS,
+  ajouterMeuble,
+  changerStatutMeuble,
+  filtrerParProprietaire,
+  useMeubles,
+  volumeConseille,
+  volumeGarde,
+  volumeM3,
+} from '../models/meubles'
+import { useFormulaire } from '../lib/useFormulaire'
+import './Meubles.css'
 
 export default function Meubles({ foyer, membres }) {
-  const { rows: meubles } = useSupabaseTable('meubles', foyer.id)
-  const [ownerFilter, setOwnerFilter] = useState('tous')
-  const [formOpen, setFormOpen] = useState(false)
-  const [form, setForm] = useState({
-    nom: '', proprietaire_id: '', longueur_cm: '', largeur_cm: '', hauteur_cm: '', piece_destination: '',
-  })
+  const { rows: meubles } = useMeubles(foyer.id)
+  const [filtre, setFiltre] = useState('tous')
+  const form = useFormulaire(FORMULAIRE_VIDE)
+  const { valeurs } = form
 
-  const liveVolume = useMemo(() => {
-    const l = Number(form.longueur_cm) || 0
-    const w = Number(form.largeur_cm) || 0
-    const h = Number(form.hauteur_cm) || 0
-    return (l * w * h) / 1000000
-  }, [form.longueur_cm, form.largeur_cm, form.hauteur_cm])
-
-  const volumeTotal = meubles
-    .filter((m) => m.statut === 'on_garde')
-    .reduce((s, m) => s + Number(m.volume_m3 || 0), 0)
-
-  const visibles = ownerFilter === 'tous' ? meubles : meubles.filter((m) => m.proprietaire_id === ownerFilter)
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!form.nom.trim() || !form.longueur_cm || !form.largeur_cm || !form.hauteur_cm) return
-    await supabase.from('meubles').insert({
-      foyer_id: foyer.id,
-      nom: form.nom.trim(),
-      proprietaire_id: form.proprietaire_id || null,
-      longueur_cm: Number(form.longueur_cm),
-      largeur_cm: Number(form.largeur_cm),
-      hauteur_cm: Number(form.hauteur_cm),
-      piece_destination: form.piece_destination.trim() || null,
-    })
-    setForm({ nom: '', proprietaire_id: '', longueur_cm: '', largeur_cm: '', hauteur_cm: '', piece_destination: '' })
-    setFormOpen(false)
-  }
-
-  async function changerStatut(meuble, statut) {
-    await supabase.from('meubles').update({ statut }).eq('id', meuble.id)
-  }
+  const volumeSaisi = volumeM3(valeurs.longueur_cm, valeurs.largeur_cm, valeurs.hauteur_cm)
+  const visibles = filtrerParProprietaire(meubles, filtre)
 
   return (
     <div>
-      <div className="top">
-        <h1>Meubles</h1>
-        <p>Liste, mesures, volume et place dans le T4</p>
-      </div>
+      <EnTete titre="Meubles">Liste, mesures, volume et place dans le T4</EnTete>
 
       <div className="vol-summary">
         <div className="label">Volume total (meubles gardés)</div>
-        <div className="value">≈ {volumeTotal.toFixed(1)} m³</div>
+        <div className="value">≈ {volumeGarde(meubles).toFixed(1)} m³</div>
         <div className="note">
-          Recommandation à donner aux déménageurs : compter ~{(volumeTotal * 1.28).toFixed(1)} m³ (marge d'empilement de +25 à 30 % incluse).
+          Recommandation à donner aux déménageurs : compter ~{volumeConseille(meubles).toFixed(1)} m³ (marge d'empilement de +25 à 30 % incluse).
         </div>
       </div>
 
-      <div className="filter-tabs">
-        <button className={ownerFilter === 'tous' ? 'active' : ''} onClick={() => setOwnerFilter('tous')}>Tous</button>
+      <div className="filter-tabs" role="group" aria-label="Filtrer par propriétaire">
+        <button className={filtre === 'tous' ? 'active' : ''} aria-pressed={filtre === 'tous'} onClick={() => setFiltre('tous')}>
+          Tous
+        </button>
         {membres.map((m) => (
-          <button key={m.id} className={ownerFilter === m.id ? 'active' : ''} onClick={() => setOwnerFilter(m.id)}>
+          <button key={m.id} className={filtre === m.id ? 'active' : ''} aria-pressed={filtre === m.id} onClick={() => setFiltre(m.id)}>
             {m.prenom}
           </button>
         ))}
@@ -77,68 +51,65 @@ export default function Meubles({ foyer, membres }) {
       <div className="card">
         <div className="card-head">
           <h3>Liste des meubles</h3>
-          <button className="btn-add" onClick={() => setFormOpen((v) => !v)}>
-            {formOpen ? 'Fermer' : '+ Ajouter un meuble'}
-          </button>
+          <BoutonOuvrir formulaire={form}>+ Ajouter un meuble</BoutonOuvrir>
         </div>
 
-        <div className={`form-panel ${formOpen ? 'open' : ''}`}>
-          <form className="form-grid" onSubmit={handleSubmit}>
-            <div className="field full">
-              <label>Nom du meuble</label>
-              <input type="text" placeholder="Ex : Canapé 3 places" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} />
+        <PanneauFormulaire formulaire={form} onValider={(v) => ajouterMeuble(foyer.id, v)} libelleValider="Ajouter à la liste">
+          <Champ label="Nom du meuble" full>
+            <input type="text" placeholder="Ex : Canapé 3 places" {...form.champ('nom')} />
+          </Champ>
+          <Champ label="Propriétaire" full groupe>
+            <div className="owner-pick">
+              <button type="button" className={valeurs.proprietaire_id === '' ? 'active' : ''} onClick={() => form.set('proprietaire_id', '')}>
+                Commun
+              </button>
+              {membres.map((m) => (
+                <button
+                  type="button"
+                  key={m.id}
+                  className={valeurs.proprietaire_id === m.id ? 'active' : ''}
+                  onClick={() => form.set('proprietaire_id', m.id)}
+                >
+                  {m.prenom}
+                </button>
+              ))}
             </div>
-            <div className="field full">
-              <label>Propriétaire</label>
-              <div className="owner-pick">
-                <button type="button" className={form.proprietaire_id === '' ? 'active' : ''} onClick={() => setForm({ ...form, proprietaire_id: '' })}>Commun</button>
-                {membres.map((m) => (
-                  <button type="button" key={m.id} className={form.proprietaire_id === m.id ? 'active' : ''} onClick={() => setForm({ ...form, proprietaire_id: m.id })}>
-                    {m.prenom}
-                  </button>
-                ))}
-              </div>
+          </Champ>
+          <Champ label="Dimensions (cm)" full groupe>
+            <div className="dims-row">
+              <input type="number" inputMode="decimal" placeholder="Long." aria-label="Longueur (cm)" {...form.champ('longueur_cm')} />
+              <span className="x">×</span>
+              <input type="number" inputMode="decimal" placeholder="Larg." aria-label="Largeur (cm)" {...form.champ('largeur_cm')} />
+              <span className="x">×</span>
+              <input type="number" inputMode="decimal" placeholder="Haut." aria-label="Hauteur (cm)" {...form.champ('hauteur_cm')} />
             </div>
-            <div className="field full">
-              <label>Dimensions (cm)</label>
-              <div className="dims-row">
-                <input type="number" placeholder="Long." value={form.longueur_cm} onChange={(e) => setForm({ ...form, longueur_cm: e.target.value })} />
-                <span className="x">×</span>
-                <input type="number" placeholder="Larg." value={form.largeur_cm} onChange={(e) => setForm({ ...form, largeur_cm: e.target.value })} />
-                <span className="x">×</span>
-                <input type="number" placeholder="Haut." value={form.hauteur_cm} onChange={(e) => setForm({ ...form, hauteur_cm: e.target.value })} />
-              </div>
-            </div>
-            <div className="live-volume">
-              <span>Volume calculé automatiquement</span>
-              <b>{liveVolume.toFixed(2)} m³</b>
-            </div>
-            <div className="field full">
-              <label>Pièce de destination</label>
-              <input type="text" placeholder="Ex : Salon" value={form.piece_destination} onChange={(e) => setForm({ ...form, piece_destination: e.target.value })} />
-            </div>
-            <div className="form-actions">
-              <button type="button" className="btn-cancel" onClick={() => setFormOpen(false)}>Annuler</button>
-              <button type="submit" className="btn-submit">Ajouter à la liste</button>
-            </div>
-          </form>
-        </div>
+          </Champ>
+          <div className="live-volume">
+            <span>Volume calculé automatiquement</span>
+            <b>{volumeSaisi.toFixed(2)} m³</b>
+          </div>
+          <Champ label="Pièce de destination" full>
+            <input type="text" placeholder="Ex : Salon" {...form.champ('piece_destination')} />
+          </Champ>
+        </PanneauFormulaire>
 
-        {visibles.map((m) => {
-          const proprietaire = membres.find((mm) => mm.id === m.proprietaire_id)
-          return (
-            <div className="furn-row" key={m.id}>
-              <WhoChip membre={proprietaire} />
-              <span className="name">{m.nom}</span>
-              <span className="dims">{m.longueur_cm}×{m.largeur_cm}×{m.hauteur_cm} cm</span>
-              <span className="vol">{Number(m.volume_m3).toFixed(2)} m³</span>
-              <select value={m.statut} onChange={(e) => changerStatut(m, e.target.value)} style={{ fontSize: 12, border: 'none', background: 'transparent', color: 'var(--text-dark-muted)' }}>
-                {STATUTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-              </select>
-            </div>
-          )
-        })}
-        {visibles.length === 0 && <p style={{ color: 'var(--text-dark-muted)', fontSize: 14 }}>Aucun meuble pour l'instant.</p>}
+        {visibles.map((m) => (
+          <div className="furn-row" key={m.id}>
+            <WhoChip membre={membres.find((mm) => mm.id === m.proprietaire_id)} />
+            <span className="name">{m.nom}</span>
+            <span className="dims">{m.longueur_cm}×{m.largeur_cm}×{m.hauteur_cm} cm</span>
+            <span className="vol">{Number(m.volume_m3).toFixed(2)} m³</span>
+            <select
+              className="statut-select"
+              aria-label={`Statut de ${m.nom}`}
+              value={m.statut}
+              onChange={(e) => changerStatutMeuble(foyer.id, m, e.target.value)}
+            >
+              {STATUTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+            </select>
+          </div>
+        ))}
+        {visibles.length === 0 && <p className="empty">Aucun meuble pour l'instant.</p>}
       </div>
     </div>
   )
