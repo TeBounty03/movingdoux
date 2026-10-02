@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router'
@@ -48,7 +48,33 @@ describe('documentation à jour', () => {
   })
 })
 
+describe('images de la documentation', () => {
+  const citees = [...`${guide}\n${technique}`.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map((m) => m[1])
+  const presentes = ['images', 'schemas'].flatMap((d) => readdirSync(`docs/${d}`).map((f) => `${d}/${f}`))
+
+  it('chaque image citée existe (sinon : npm run captures)', () => {
+    expect(citees.length).toBeGreaterThan(10)
+    for (const image of citees) expect(presentes, `${image} citée mais absente de docs/`).toContain(image)
+  })
+
+  it('chaque image générée est citée dans la doc', () => {
+    for (const image of presentes) expect(citees, `${image} n'est citée nulle part`).toContain(image)
+  })
+
+  it('chaque schéma HTML a son image', () => {
+    const sources = readdirSync('scripts/captures/schemas').filter((f) => f.endsWith('.html'))
+    for (const f of sources) expect(presentes).toContain(`schemas/${f.replace('.html', '.png')}`)
+  })
+})
+
 describe('écran Aide', () => {
+  it('affiche les captures et les schémas', () => {
+    const { container } = afficher('/aide')
+    const captures = container.querySelectorAll('img.doc-capture')
+    expect(captures.length).toBeGreaterThan(10)
+    expect(captures[0]).toHaveAttribute('alt', 'Écran de connexion')
+  })
+
   it("affiche le guide d'utilisation avec son sommaire", () => {
     afficher('/aide')
     expect(screen.getByRole('link', { name: "Guide d'utilisation" })).toHaveAttribute('aria-current', 'page')

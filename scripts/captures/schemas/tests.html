@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Tests</h1>
+  <p class="lead">Trois niveaux, du plus rapide au plus complet. Aucun ne touche la vraie base.</p>
+
+  <div class="zone dev">
+    <span class="label">npm test · quelques secondes</span>
+    <div class="box"><b>Logique et écrans</b><small>Calculs des modèles, formulaires, cohérence code ↔ règles ↔ doc. Firebase simulé.</small></div>
+  </div>
+  <div class="gap"></div>
+  <div class="zone fb">
+    <span class="label">npm run test:rules · émulateur Firestore</span>
+    <div class="box"><b>Règles de sécurité</b><small>Les mêmes écritures que l'appli, autorisées ou refusées.</small></div>
+  </div>
+  <div class="gap"></div>
+  <div class="zone app">
+    <span class="label">npm run test:e2e · émulateurs + Chromium</span>
+    <div class="box"><b>Parcours complets</b><small>Connexion, foyer, chaque écran, 2ᵉ personne en direct, adresses, doc. Sur ordinateur, 412 px et 320 px.</small>
+      <div class="chips"><span class="chip">pas de défilement horizontal</span><span class="chip">rien ne déborde</span><span class="chip">champs ≥ 16 px</span><span class="chip">aucune erreur console</span></div>
+    </div>
+  </div>
+
+  <div class="arrow">tout est vert ?</div>
+  <div class="row">
+    <div class="box"><b>git push</b><small>GitHub Actions relance tout.</small></div>
+    <div class="box"><b>npm run deploy</b><small>Rien n'est mis en ligne si un test échoue.</small></div>
+  </div>
+</body></html>

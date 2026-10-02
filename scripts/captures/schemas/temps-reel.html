@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Temps réel et hors ligne</h1>
+  <p class="lead">Ce qu'un membre ajoute apparaît chez les autres sans recharger.</p>
+
+  <div class="row" style="align-items: stretch">
+    <div class="zone app">
+      <span class="label">Téléphone de Léa</span>
+      <div class="box"><b>Ajoute un carton</b><small>ajouterCarton() → addRow()</small></div>
+      <div class="box"><small>Affiché tout de suite (écriture locale), envoyé ensuite.</small></div>
+    </div>
+    <div class="zone app">
+      <span class="label">Ordinateur de Sam</span>
+      <div class="box"><b>Écran Cartons ouvert</b><small>useCartons() → onSnapshot</small></div>
+      <div class="box"><small>Le carton apparaît tout seul.</small></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="arrow">envoie</div>
+    <div class="arrow up">prévient</div>
+  </div>
+  <div class="zone fb">
+    <span class="label">Firestore</span>
+    <div class="box"><b class="mono">foyers/{id}/cartons</b><small>Enregistre, puis prévient tous ceux qui écoutent cette collection.</small></div>
+  </div>
+
+  <div class="note"><b>Hors ligne</b> : un cache dans le navigateur (IndexedDB) garde les données et les écritures ; tout part au retour du réseau. Il faut du réseau pour ouvrir l'appli. Avec les émulateurs, cache en mémoire.</div>
+</body></html>

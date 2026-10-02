@@ -80,5 +80,6 @@ npm run build    # build de production (vérifie qu'il n'y a pas d'erreurs)
 npm run lint     # vérifie la qualité du code
 npm test         # tests unitaires et composants
 npm run test:all # tous les tests
+npm run captures # régénère les captures et schémas de la doc (docs/images, docs/schemas)
 npm run deploy   # met en ligne sur Firebase
 ```

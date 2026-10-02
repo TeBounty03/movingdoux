@@ -7,6 +7,13 @@ import { rendreDoc } from '../lib/markdown'
 import './Aide.css'
 
 // Les deux documents vivent dans docs/ (lisibles aussi sur GitHub) : l'écran les affiche tels quels.
+// Captures et schémas de docs/ : Vite leur donne leur adresse définitive au build
+const IMAGES = Object.fromEntries(
+  Object.entries(
+    import.meta.glob('../../docs/{images,schemas}/*.{jpg,png}', { eager: true, query: '?url', import: 'default' })
+  ).map(([chemin, url]) => [chemin.replace('../../docs/', ''), url])
+)
+
 const DOCS = [
   { chemin: '/aide', titre: "Guide d'utilisation", resume: 'Comment utiliser Moving Doux, écran par écran', source: guide },
   { chemin: '/aide/technique', titre: 'Documentation technique', resume: "Comment l'appli est construite, pour la modifier", source: docTechnique },
@@ -16,7 +23,7 @@ const DOCS = [
 export default function Aide() {
   const { pathname } = useLocation()
   const doc = DOCS.find((d) => d.chemin === pathname) ?? DOCS[0]
-  const { html, sommaire } = useMemo(() => rendreDoc(doc.source), [doc])
+  const { html, sommaire } = useMemo(() => rendreDoc(doc.source, IMAGES), [doc])
 
   return (
     <div className="aide">

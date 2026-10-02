@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Créer ou rejoindre un foyer</h1>
+  <p class="lead">De la connexion à l'appli. Les écritures d'une même étape partent ensemble (batch).</p>
+
+  <div class="zone fb">
+    <span class="label">Connexion · lib/useAuth.js</span>
+    <div class="box"><div class="step"><span class="num">1</span><span><b>Lien magique</b><br><small>sendSignInLinkToEmail, e-mail gardé dans le navigateur, puis signInWithEmailLink au retour.</small></span></div></div>
+  </div>
+  <div class="arrow">users/{uid} existe ?</div>
+  <div class="row" style="grid-template-columns: 2fr 1fr; align-items: stretch">
+    <div class="zone app">
+      <span class="label">Non · écran Bienvenue</span>
+      <div class="box"><div class="step"><span class="num">2</span><span><b>Créer</b><br><small>foyer + code + fiche membre + users/{uid}</small></span></div></div>
+      <div class="box"><div class="step"><span class="num">2</span><span><b>Rejoindre</b><br><small>lire codes/{code}, s'ajouter à membresUids + fiche + users/{uid}</small></span></div></div>
+    </div>
+    <div class="zone dev">
+      <span class="label">Oui</span>
+      <div class="box"><small>Directement l'appli.</small></div>
+    </div>
+  </div>
+  <div class="arrow">attendre la confirmation du serveur</div>
+  <div class="zone fb">
+    <span class="label">lib/useFoyer.js</span>
+    <div class="box"><div class="step"><span class="num">3</span><span><b>Écouter le foyer et ses membres</b><br><small>onSnapshot, mis à jour en direct.</small></span></div></div>
+  </div>
+
+  <div class="note"><b>Piège déjà rencontré</b> : Firestore affiche une écriture <i>avant</i> que le serveur l'ait enregistrée. Écouter le foyer trop tôt est refusé par les règles et l'écoute s'arrête. <code>useFoyer</code> ignore donc <code>users/{uid}</code> tant qu'il a <code>hasPendingWrites</code>.</div>
+</body></html>

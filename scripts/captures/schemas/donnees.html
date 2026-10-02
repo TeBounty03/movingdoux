@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Données (Firestore)</h1>
+  <p class="lead">Tout ce qui concerne un déménagement est rangé sous son foyer.</p>
+
+  <div class="row" style="align-items: stretch">
+    <div class="zone grey">
+      <span class="label">Comptes</span>
+      <div class="box"><b class="mono">users/{uid}</b><small>Le foyer de la personne connectée.</small><div class="chips"><span class="chip">foyer_id</span><span class="chip">join_code</span></div></div>
+      <div class="box"><b class="mono">codes/{code}</b><small>Code d'invitation → foyer.</small><div class="chips"><span class="chip">foyer_id</span></div></div>
+    </div>
+    <div class="zone app">
+      <span class="label">Le foyer</span>
+      <div class="box strong" style="color: var(--app)"><b class="mono" style="color: var(--ink)">foyers/{foyerId}</b><div class="chips"><span class="chip">nom</span><span class="chip">code</span><span class="chip">couleur_accent</span><span class="chip">membresUids</span></div></div>
+    </div>
+  </div>
+
+  <div class="arrow">sous-collections du foyer</div>
+
+  <div class="zone fb">
+    <span class="label">foyers/{foyerId}/…</span>
+    <div class="box"><b class="mono">membres</b><small>Avec compte (id = uid) ou sans compte (user_id = null).</small><div class="chips"><span class="chip">prenom</span><span class="chip">couleur</span><span class="chip">user_id</span></div></div>
+    <div class="row">
+      <div class="box"><b class="mono">taches</b><div class="chips"><span class="chip">phase</span><span class="chip">statut</span><span class="chip fb">assigne_id</span><span class="chip">parent_tache_id</span></div></div>
+      <div class="box"><b class="mono">cartons</b><div class="chips"><span class="chip">numero</span><span class="chip">piece</span><span class="chip">statut</span></div></div>
+    </div>
+    <div class="row">
+      <div class="box"><b class="mono">depenses</b><div class="chips"><span class="chip fb">paye_par_id</span><span class="chip">montant_prevu</span><span class="chip">montant_reel</span></div></div>
+      <div class="box"><b class="mono">demarches</b><div class="chips"><span class="chip">categorie</span><span class="chip">echeance</span><span class="chip">statut</span></div></div>
+    </div>
+    <div class="box"><b class="mono">meubles</b><div class="chips"><span class="chip fb">proprietaire_id</span><span class="chip">dimensions (cm)</span><span class="chip">volume_m3</span><span class="chip">statut</span></div></div>
+  </div>
+
+  <div class="note"><b>En bleu</b> : l'id d'un membre. Rien n'est supprimé en cascade : l'affichage doit tolérer un id qui ne correspond plus à personne. Chaque document a un <code>created_at</code> posé par le serveur, qui fixe l'ordre d'affichage.</div>
+</body></html>

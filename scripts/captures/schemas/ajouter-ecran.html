@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Ajouter un écran</h1>
+  <p class="lead">Exemple : un écran « Logement ». Les fichiers à toucher, dans l'ordre.</p>
+
+  <div class="zone dev">
+    <span class="label">Données</span>
+    <div class="box"><div class="step"><span class="num">1</span><span><b class="mono">models/logement.js</b><br><small>COLLECTION, FORMULAIRE_VIDE, nouveauX(), calculs, useLogement, ajouterX. Modèle à copier : cartons.js.</small></span></div></div>
+    <div class="box"><div class="step"><span class="num">2</span><span><b class="mono">models/index.js</b> + <b class="mono">firestore.rules</b><br><small>Déclarer et autoriser la collection. Un test vérifie que les deux listes sont identiques.</small></span></div></div>
+  </div>
+  <div class="arrow"></div>
+  <div class="zone app">
+    <span class="label">Affichage</span>
+    <div class="box"><div class="step"><span class="num">3</span><span><b class="mono">screens/Logement.jsx</b><br><small>EnTete, useFormulaire, BoutonOuvrir, PanneauFormulaire, Champ.</small></span></div></div>
+    <div class="box"><div class="step"><span class="num">4</span><span><b class="mono">ecrans.js</b><br><small>Une ligne : adresse /logement et place dans la navigation.</small></span></div></div>
+  </div>
+  <div class="arrow"></div>
+  <div class="zone fb">
+    <span class="label">Vérifier</span>
+    <div class="box"><div class="step"><span class="num">5</span><span><b>Tests et doc</b><br><small>models.test.js, Logement.test.jsx, une étape dans e2e/parcours.spec.js, une section dans le guide, puis npm run captures.</small></span></div></div>
+  </div>
+</body></html>

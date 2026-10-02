@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Les fichiers</h1>
+  <p class="lead">Où se trouve quoi dans le dépôt.</p>
+
+  <div class="zone app">
+    <span class="label">src/ · l'appli</span>
+    <div class="row">
+      <div class="box"><b>screens/</b><small>Écran + son CSS + son test</small></div>
+      <div class="box"><b>models/</b><small>Données et calculs</small></div>
+    </div>
+    <div class="row">
+      <div class="box"><b>components/</b><small>Éléments réutilisables</small></div>
+      <div class="box"><b>lib/</b><small>Firebase, session, format</small></div>
+    </div>
+    <div class="row">
+      <div class="box"><b>styles/</b><small>base.css, layout.css</small></div>
+      <div class="box"><b>ecrans.js</b><small>Liste des écrans</small></div>
+    </div>
+  </div>
+  <div class="gap"></div>
+  <div class="row" style="align-items: stretch">
+    <div class="zone fb">
+      <span class="label">Firebase</span>
+      <div class="box"><b>firestore.rules</b><small>Sécurité</small></div>
+      <div class="box"><b>firebase.json</b><small>Hosting, émulateurs</small></div>
+    </div>
+    <div class="zone dev">
+      <span class="label">Tests</span>
+      <div class="box"><b>*.test.jsx</b><small>À côté du code</small></div>
+      <div class="box"><b>tests/rules/</b><small>Règles</small></div>
+      <div class="box"><b>e2e/</b><small>Parcours complets</small></div>
+    </div>
+  </div>
+  <div class="gap"></div>
+  <div class="zone grey">
+    <span class="label">Documentation</span>
+    <div class="row">
+      <div class="box"><b>docs/</b><small>Guide, doc technique, images</small></div>
+      <div class="box"><b>scripts/captures/</b><small>Génère captures et schémas</small></div>
+    </div>
+  </div>
+</body></html>

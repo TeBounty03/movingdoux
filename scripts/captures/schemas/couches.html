@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Comment l'appli est découpée</h1>
+  <p class="lead">Du haut (ce que voit l'utilisateur) vers le bas (la base). Chaque couche n'appelle que celle du dessous.</p>
+
+  <div class="zone app">
+    <span class="label">Affichage</span>
+    <div class="box"><b>App.jsx</b><small>Connecté ? Foyer ? → connexion, bienvenue ou l'appli.</small></div>
+    <div class="box"><b>ecrans.js</b><small>Liste des écrans : adresse, libellé, place dans la navigation.</small></div>
+    <div class="row" style="grid-template-columns: 1.3fr 1fr">
+      <div class="box strong" style="color: var(--app)"><b style="color: var(--ink)">screens/</b><small>Un fichier par écran. Affichage uniquement.</small></div>
+      <div class="box"><b>components/</b><small>Formulaire, navigation, en-tête…</small></div>
+    </div>
+  </div>
+
+  <div class="arrow">ajouterTache(), useCartons()…</div>
+
+  <div class="zone dev">
+    <span class="label">Métier</span>
+    <div class="box strong" style="color: var(--dev)"><b style="color: var(--ink)">models/</b><small>Un fichier par type de données : valeurs par défaut, calculs (soldes, volumes, échéances), lecture et écriture.</small></div>
+  </div>
+
+  <div class="arrow">addRow(), updateRow(), useFoyerCollection()</div>
+
+  <div class="zone fb">
+    <span class="label">Accès aux données</span>
+    <div class="row">
+      <div class="box"><b>lib/data.js</b><small>Firestore générique, temps réel.</small></div>
+      <div class="box"><b>lib/useAuth · useFoyer</b><small>Session, foyer, membres.</small></div>
+    </div>
+    <div class="box"><b>Firestore</b><small>protégé par <code>firestore.rules</code></small></div>
+  </div>
+
+  <div class="note"><b>Règle d'or</b> : un écran n'importe jamais Firebase. Les calculs sont dans <code>models/</code>, testables sans affichage.</div>
+</body></html>

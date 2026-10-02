@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="_base.css"></head>
+<body>
+  <h1>Vue d'ensemble</h1>
+  <p class="lead">Une appli web, Firebase pour tout le reste. Aucun serveur à maintenir.</p>
+
+  <div class="zone app">
+    <span class="label">Dans le navigateur</span>
+    <div class="box strong" style="color: var(--app)"><b style="color: var(--ink)">L'appli Moving Doux</b><small>React 19, construite par Vite. Téléphone ou ordinateur.</small></div>
+  </div>
+
+  <div class="arrow both">charge l'appli, se connecte,<br>lit et écrit en temps réel</div>
+
+  <div class="zone fb">
+    <span class="label">Firebase · projet moving-doux · gratuit</span>
+    <div class="row">
+      <div class="box"><b>Hosting</b><small>Sert le dossier <code>dist/</code>.</small></div>
+      <div class="box"><b>Auth</b><small>Lien magique par e-mail.</small></div>
+    </div>
+    <div class="box strong" style="color: var(--fb)"><b style="color: var(--ink)">Firestore</b><small>Toutes les données (Paris). <code>firestore.rules</code> décide qui lit et écrit quoi.</small></div>
+  </div>
+
+  <div class="arrow up">npm run deploy<br>(tests, build, mise en ligne)</div>
+
+  <div class="zone dev">
+    <span class="label">Développement</span>
+    <div class="row">
+      <div class="box"><b>Poste du dev</b><small>Vite + émulateurs Firebase (données de test).</small></div>
+      <div class="box"><b>GitHub Actions</b><small>Tous les tests à chaque push.</small></div>
+    </div>
+  </div>
+
+  <div class="note"><b>Pas de serveur à nous</b> : le navigateur parle directement à Firestore. La sécurité tient entièrement dans <code>firestore.rules</code>.</div>
+</body></html>

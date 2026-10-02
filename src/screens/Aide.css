@@ -48,6 +48,11 @@
 .doc td code, .doc th code { overflow-wrap: normal; white-space: nowrap; }
 .doc td:first-child { width: 1%; white-space: nowrap; }
 
+/* Images : captures à la taille d'un téléphone, schémas un peu plus larges */
+.doc img { display: block; max-width: 100%; height: auto; margin: 14px 0; border-radius: 14px; }
+.doc .doc-capture { width: 340px; border: 1px solid var(--paper-line); box-shadow: 0 6px 20px rgba(30, 42, 50, 0.18); }
+.doc .doc-schema { width: 440px; border: 1px solid var(--paper-line); }
+
 /* Page Aide hors connexion : même mise en page, sans la navigation */
 .aide-autonome { max-width: 860px; margin: 0 auto; padding: 28px 16px 48px; }
 .aide-retour { display: inline-block; margin-bottom: 18px; color: var(--text-muted); font-size: 14px; }

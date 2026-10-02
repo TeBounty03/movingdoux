@@ -13,7 +13,8 @@ export function ancre(texte) {
 
 // Convertit la documentation (docs/*.md, contenu du dépôt donc de confiance) en HTML.
 // Les titres reçoivent une ancre ; le sommaire liste les titres de niveau 2.
-export function rendreDoc(source) {
+// `images` associe un chemin relatif à docs/ (« images/budget.jpg ») à son adresse une fois l'appli construite.
+export function rendreDoc(source, images = {}) {
   const sommaire = []
   const marked = new Marked({
     renderer: {
@@ -21,6 +22,11 @@ export function rendreDoc(source) {
         const id = ancre(texte)
         if (niveau === 2) sommaire.push({ id, titre: texte })
         return `<h${niveau} id="${id}">${html}</h${niveau}>\n`
+      },
+      // Captures (images/) à la taille d'un téléphone, schémas (schemas/) un peu plus larges
+      image(href, _titre, texte) {
+        const classe = href.startsWith('schemas/') ? 'doc-schema' : 'doc-capture'
+        return `<img class="${classe}" src="${images[href] ?? href}" alt="${texte}" loading="lazy">`
       },
     },
   })
